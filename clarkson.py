@@ -5,6 +5,7 @@ from tqdm import tqdm
 from time import time
 from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import load_svmlight_file
+from tensorflow.keras.datasets import mnist
 
 data_path = "/data/local/AA/data/"
 results_path = "/data/local/AA/results/"
@@ -18,7 +19,7 @@ data_name = { # old:new
     "covertype": "Covertype",
 }
 
-def load_data(dataset, X=None, standardize=False):
+def load_data(dataset, data=None, standardize=False):
     X = []
     y = []
 
@@ -48,8 +49,8 @@ def load_data(dataset, X=None, standardize=False):
             data = np.loadtxt(f, skiprows=0, delimiter=",")
             X.append(data[1:, :].flatten())
         X = np.array(X)
-    elif X is not None:
-        return X
+    elif data is not None:
+        return data, y
     else:
         raise NotImplementedError
 
@@ -172,8 +173,8 @@ def clarkson_coreset(X, ind_E, ind_S, dataset_name):
     finally:
         return X_C
 
-def compute_clarkson_coreset(dataset, X=None):
-    X, _ = load_data(dataset, X)  # y won't be used
+def compute_clarkson_coreset(dataset, data=None):
+    X, _ = load_data(dataset, data=data)  # y won't be used
 
     t_start = time()
 
@@ -191,3 +192,9 @@ def compute_clarkson_coreset(dataset, X=None):
 
     print("Length of X_C: ", len(X_C))
     print("Time taken: ", t_end-t_start)
+
+if __name__ == "__main__":
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    X = np.concatenate((x_train, x_test))
+    X = X.reshape(X.shape[0], 28 * 28)
+    compute_clarkson_coreset("mnist", data=X)
