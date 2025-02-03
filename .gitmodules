@@ -1,0 +1,3 @@
+[submodule "clarkson_coreset_algorithm"]
+	path = clarkson_coreset_algorithm
+	url = git@github.com:amet-vikram13/clarkson_coreset_algorithm.git
